@@ -17,6 +17,7 @@ enum TileType : int
     GRASS,      // Marks unoccupied space, can be overwritten 
     DIRT,       // Marks the path, cannot be overwritten
     WAYPOINT,   // Marks where the path turns, cannot be overwritten
+    TURRET,     // For defeating pesky enemies
     COUNT
 };
 
@@ -37,6 +38,13 @@ struct Enemy
     bool at_end = false;
 };
 
+struct Turret
+{
+    Vector2 turret_location = { 0.0f, 0.0f };
+    int Damage = 1;
+    float fire_Interval = 0.8f;
+};
+
 constexpr std::array<Cell, 4> DIRECTIONS{ Cell{ -1, 0 }, Cell{ 1, 0 }, Cell{ 0, -1 }, Cell{ 0, 1 } };
 
 inline bool InBounds(Cell cell, int rows = TILE_COUNT, int cols = TILE_COUNT)
@@ -55,7 +63,8 @@ void DrawTile(int row, int col, int type)
     {
         LIME,
         BEIGE,
-        SKYBLUE
+        SKYBLUE,
+        YELLOW
     };
     //assert(type >= 0 && type < COUNT);
     DrawTile(row, col, colors[type]);
