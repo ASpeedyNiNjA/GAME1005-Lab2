@@ -35,6 +35,7 @@ struct Enemy
     float enemy_speed = 250.0f;
     int curr = 0;
     int next = curr + 1;
+    bool released = false;
     bool at_end = false;
 };
 
@@ -122,11 +123,16 @@ int main()
 {
 
     Enemy enemy;
+    enemy.released = true;
+    Enemy enemy2;
+    std::vector<Enemy> enemies;
+    std::vector<Turret> turrets;
+    float spawn_timer = 0.0f;
 
     int tiles[TILE_COUNT][TILE_COUNT]
     {
         //col:0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19    row:
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0 }, // 0
+            { 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0 }, // 0                  ..that turret can't hit anything!
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 }, // 1
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 }, // 2
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 }, // 3
@@ -152,8 +158,9 @@ int main()
     //int next = curr + 1;
     
     enemy.enemy_position = TileCenter(waypoints[enemy.curr].row, waypoints[enemy.curr].col);
+    enemy2.enemy_position = TileCenter(waypoints[enemy2.curr].row, waypoints[enemy2.curr].col);
     //float enemy_speed = 250.0f;   // <-- 250 pixels per second
-    float min_distance = enemy.enemy_speed / 60.0f;
+    float min_distance = enemy.enemy_speed / 60.0f; // <-- Cheating a little here, enemy2 with the same speed uses this
     min_distance *= 1.1f;
     //bool at_end = false;
 
@@ -162,8 +169,14 @@ int main()
     while (!WindowShouldClose())
     {
         float dt = GetFrameTime();
+        spawn_timer += dt;
 
-        if (!enemy.at_end)
+        if (spawn_timer >= 1.0f)
+        {
+            enemy2.released = true;
+        }
+
+        if (!enemy.at_end && enemy.released) //Keep missing this line of code scanning
         {
             Vector2 from = TileCenter(waypoints[enemy.curr].row, waypoints[enemy.curr].col);
             Vector2 to = TileCenter(waypoints[enemy.next].row, waypoints[enemy.next].col);
@@ -181,6 +194,25 @@ int main()
             }
         }
 
+        if (!enemy2.at_end && enemy2.released) 
+        {
+            Vector2 from = TileCenter(waypoints[enemy2.curr].row, waypoints[enemy2.curr].col);
+            Vector2 to = TileCenter(waypoints[enemy2.next].row, waypoints[enemy2.next].col);
+            Vector2 direction = Vector2Normalize(to - from);
+            enemy2.enemy_position += direction * enemy2.enemy_speed * dt;
+
+            // Tolorance depends on enemy speed
+            if (CheckCollisionPointCircle(enemy2.enemy_position, to, min_distance))
+            {
+                enemy2.enemy_position = to;
+
+                enemy2.curr++;
+                enemy2.next++;
+                enemy2.at_end = enemy2.curr == waypoints.size() - 1;
+            }
+        }
+
+
         BeginDrawing();
         ClearBackground(BLACK);
 
@@ -194,6 +226,7 @@ int main()
         }
 
         DrawCircleV(enemy.enemy_position, 20.0f, enemy.colour);
+        DrawCircleV(enemy2.enemy_position, 20.0f, enemy2.colour);
 
         EndDrawing();
     }
