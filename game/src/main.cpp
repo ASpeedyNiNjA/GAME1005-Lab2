@@ -59,7 +59,7 @@ void DrawTile(int row, int col, Color color)
 
 void DrawTile(int row, int col, int type)
 {
-    Color colors[3] =
+    Color colors[4] =
     {
         LIME,
         BEIGE,
