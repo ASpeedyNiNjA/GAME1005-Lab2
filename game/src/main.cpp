@@ -188,9 +188,13 @@ int main()
         float dt = GetFrameTime();
         spawn_timer += dt;
 
-        if (spawn_timer >= 1.0f)
+
+        for (int i = 0; i < 10; i++)
         {
-            enemy2.released = true;
+            if (spawn_timer >= 1.0f)
+            {
+                enemy2.released = true;
+            }
         }
 
         if (!enemy.at_end && enemy.released) //Keep missing this line of code scanning
