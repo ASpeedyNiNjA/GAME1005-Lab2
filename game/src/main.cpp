@@ -214,12 +214,19 @@ int main()
         float dt = GetFrameTime();
         spawn_timer += dt;
 
-        if (spawn_timer >= 1.0f)
+        //if (spawn_timer >= 1.0f)
+        //{
+        //    enemies[0].released = true;
+        //}
+
+        for (int i = 0; i < 3; i++)
         {
-            enemies[0].released = true;
+            if (spawn_timer >= 1.0f)
+            {
+                enemies[i].released = true;
+                spawn_timer = 0;
+            }
         }
-
-
 
 
         if (!enemy.at_end && enemy.released) //Keep missing this line of code scanning
@@ -240,21 +247,24 @@ int main()
             }
         }
 
-        if (!enemies[0].at_end && enemies[0].released)
+        for (int i = 0; i < 3; i++)
         {
-            Vector2 from = TileCenter(waypoints[enemies[0].curr].row, waypoints[enemies[0].curr].col);
-            Vector2 to = TileCenter(waypoints[enemies[0].next].row, waypoints[enemies[0].next].col);
-            Vector2 direction = Vector2Normalize(to - from);
-            enemies[0].enemy_position += direction * enemies[0].enemy_speed * dt;
-
-            // Tolorance depends on enemy speed
-            if (CheckCollisionPointCircle(enemies[0].enemy_position, to, min_distance))
+            if (!enemies[i].at_end && enemies[i].released)
             {
-                enemies[0].enemy_position = to;
+                Vector2 from = TileCenter(waypoints[enemies[i].curr].row, waypoints[enemies[i].curr].col);
+                Vector2 to = TileCenter(waypoints[enemies[i].next].row, waypoints[enemies[i].next].col);
+                Vector2 direction = Vector2Normalize(to - from);
+                enemies[i].enemy_position += direction * enemies[i].enemy_speed * dt;
 
-                enemies[0].curr++;
-                enemies[0].next++;
-                enemies[0].at_end = enemies[0].curr == waypoints.size() - 1;
+                // Tolorance depends on enemy speed
+                if (CheckCollisionPointCircle(enemies[i].enemy_position, to, min_distance))
+                {
+                    enemies[i].enemy_position = to;
+
+                    enemies[i].curr++;
+                    enemies[i].next++;
+                    enemies[i].at_end = enemies[i].curr == waypoints.size() - 1;
+                }
             }
         }
 
@@ -272,7 +282,11 @@ int main()
         }
 
         DrawCircleV(enemy.enemy_position, 20.0f, enemy.colour);
-        DrawCircleV(enemies[0].enemy_position, 20.0f, enemies[0].colour);
+        //DrawCircleV(enemies[0].enemy_position, 20.0f, enemies[0].colour);
+        for (int i = 0; i < 3; i++)
+        {
+            DrawCircleV(enemies[i].enemy_position, 20.0f, enemies[i].colour);
+        }
 
         EndDrawing();
     }
