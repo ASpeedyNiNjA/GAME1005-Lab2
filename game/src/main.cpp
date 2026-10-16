@@ -130,6 +130,18 @@ int main()
     std::vector<Turret> turrets;
     float spawn_timer = 0.0f;
 
+    for (int i = 0; i < 10; i++)
+    {
+            Enemy enemy10;
+            enemies.push_back(enemy10);
+            enemy10.released = true;    //This comes later
+            spawn_timer = 0;
+    }
+
+
+
+    
+
     int tiles[TILE_COUNT][TILE_COUNT]
     {
         //col:0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19    row:
@@ -172,6 +184,9 @@ int main()
     std::cout << "Number of turrets: " << turrets.size() << std::endl; 
     TraceLog(LOG_INFO, "Number of turrets: %d", (int)turrets.size());
 
+    //Confirming 10 enemies have spawned
+    std::cout << "Number of enemies: " << enemies.size() << std::endl;
+    TraceLog(LOG_INFO, "Number of enemies: %d", (int)enemies.size());
 
     
     enemy.enemy_position = TileCenter(waypoints[enemy.curr].row, waypoints[enemy.curr].col);
@@ -189,22 +204,7 @@ int main()
         spawn_timer += dt;
 
 
-        for (int i = 0; i < 10; i++)
-        {
-            if (spawn_timer >= 1.0f)
-            {
-                Enemy enemy10;
-                enemies.push_back(enemy10);
-                enemy10.released = true;
-                spawn_timer = 0;
-            }
-        }
 
-        for (int i = 0; i < 2; i++)
-        {
-            std::cout << "Number of enemies: " << enemies.size() << std::endl;
-            TraceLog(LOG_INFO, "Number of enemies: %d", (int)enemies.size());
-        }
 
 
 
