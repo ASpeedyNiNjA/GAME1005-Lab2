@@ -129,6 +129,7 @@ int main()
     std::vector<Enemy> enemies;
     std::vector<Turret> turrets;
     float spawn_timer = 0.0f;
+    int next_enemy = 0;
 
     for (int i = 0; i < 10; i++)
     {
@@ -219,13 +220,11 @@ int main()
         //    enemies[0].released = true;
         //}
 
-        for (int i = 0; i < 3; i++)
+        if (spawn_timer >= 1.0f && next_enemy < enemies.size())
         {
-            if (spawn_timer >= 1.0f)
-            {
-                enemies[i].released = true;
-                spawn_timer = 0;
-            }
+            enemies[next_enemy].released = true;
+            next_enemy++;
+            spawn_timer = 0.0f;
         }
 
 
@@ -247,7 +246,7 @@ int main()
             }
         }
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 10; i++)
         {
             if (!enemies[i].at_end && enemies[i].released)
             {
@@ -281,9 +280,9 @@ int main()
             }
         }
 
-        DrawCircleV(enemy.enemy_position, 20.0f, enemy.colour);
+        //DrawCircleV(enemy.enemy_position, 20.0f, enemy.colour);
         //DrawCircleV(enemies[0].enemy_position, 20.0f, enemies[0].colour);
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 10; i++)
         {
             DrawCircleV(enemies[i].enemy_position, 20.0f, enemies[i].colour);
         }
