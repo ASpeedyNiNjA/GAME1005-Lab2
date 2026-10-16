@@ -6,6 +6,7 @@
 #include <array>
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 constexpr float SCREEN_SIZE = 800;
 
@@ -154,8 +155,24 @@ int main()
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }  // 19
     };
     std::vector<Cell> waypoints = FloodFill({ 0, 12 }, tiles, WAYPOINT);
-    //int curr = 0;
-    //int next = curr + 1;
+    for (int row = 0; row < TILE_COUNT; row++)
+    {
+        for (int col = 0; col < TILE_COUNT; col++)
+        {
+            if (tiles[row][col] == TURRET)
+            {
+                Turret turret;
+                turret.turret_location = TileCenter(row, col);
+                turrets.push_back(turret);
+            }
+        }
+    }
+
+    //Confirming 6 turrets and not just dots on a pixel map have been added to the vector array
+    std::cout << "Number of turrets: " << turrets.size() << std::endl; 
+    TraceLog(LOG_INFO, "Number of turrets: %d", (int)turrets.size());
+
+
     
     enemy.enemy_position = TileCenter(waypoints[enemy.curr].row, waypoints[enemy.curr].col);
     enemy2.enemy_position = TileCenter(waypoints[enemy2.curr].row, waypoints[enemy2.curr].col);
