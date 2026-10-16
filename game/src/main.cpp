@@ -134,8 +134,6 @@ int main()
     {
             Enemy enemy10;
             enemies.push_back(enemy10);
-            enemy10.released = true;    //This comes later
-            spawn_timer = 0;
     }
 
 
@@ -191,6 +189,19 @@ int main()
     
     enemy.enemy_position = TileCenter(waypoints[enemy.curr].row, waypoints[enemy.curr].col);
     enemy2.enemy_position = TileCenter(waypoints[enemy2.curr].row, waypoints[enemy2.curr].col);
+
+    //DRY Violation
+    enemies[0].enemy_position = TileCenter(waypoints[enemies[0].curr].row, waypoints[enemies[0].curr].col);
+    enemies[1].enemy_position = TileCenter(waypoints[enemies[1].curr].row, waypoints[enemies[1].curr].col);
+    enemies[2].enemy_position = TileCenter(waypoints[enemies[2].curr].row, waypoints[enemies[2].curr].col);
+    enemies[3].enemy_position = TileCenter(waypoints[enemies[3].curr].row, waypoints[enemies[3].curr].col);
+    enemies[4].enemy_position = TileCenter(waypoints[enemies[4].curr].row, waypoints[enemies[4].curr].col);
+    enemies[5].enemy_position = TileCenter(waypoints[enemies[5].curr].row, waypoints[enemies[5].curr].col);
+    enemies[6].enemy_position = TileCenter(waypoints[enemies[6].curr].row, waypoints[enemies[6].curr].col);
+    enemies[7].enemy_position = TileCenter(waypoints[enemies[7].curr].row, waypoints[enemies[7].curr].col);
+    enemies[8].enemy_position = TileCenter(waypoints[enemies[8].curr].row, waypoints[enemies[8].curr].col);
+    enemies[9].enemy_position = TileCenter(waypoints[enemies[9].curr].row, waypoints[enemies[9].curr].col);
+
     //float enemy_speed = 250.0f;   // <-- 250 pixels per second
     float min_distance = enemy.enemy_speed / 60.0f; // <-- Cheating a little here, enemy2 with the same speed uses this
     min_distance *= 1.1f;
@@ -203,7 +214,10 @@ int main()
         float dt = GetFrameTime();
         spawn_timer += dt;
 
-
+        if (spawn_timer >= 1.0f)
+        {
+            enemies[0].released = true;
+        }
 
 
 
@@ -226,21 +240,21 @@ int main()
             }
         }
 
-        if (!enemy2.at_end && enemy2.released) 
+        if (!enemies[0].at_end && enemies[0].released)
         {
-            Vector2 from = TileCenter(waypoints[enemy2.curr].row, waypoints[enemy2.curr].col);
-            Vector2 to = TileCenter(waypoints[enemy2.next].row, waypoints[enemy2.next].col);
+            Vector2 from = TileCenter(waypoints[enemies[0].curr].row, waypoints[enemies[0].curr].col);
+            Vector2 to = TileCenter(waypoints[enemies[0].next].row, waypoints[enemies[0].next].col);
             Vector2 direction = Vector2Normalize(to - from);
-            enemy2.enemy_position += direction * enemy2.enemy_speed * dt;
+            enemies[0].enemy_position += direction * enemies[0].enemy_speed * dt;
 
             // Tolorance depends on enemy speed
-            if (CheckCollisionPointCircle(enemy2.enemy_position, to, min_distance))
+            if (CheckCollisionPointCircle(enemies[0].enemy_position, to, min_distance))
             {
-                enemy2.enemy_position = to;
+                enemies[0].enemy_position = to;
 
-                enemy2.curr++;
-                enemy2.next++;
-                enemy2.at_end = enemy2.curr == waypoints.size() - 1;
+                enemies[0].curr++;
+                enemies[0].next++;
+                enemies[0].at_end = enemies[0].curr == waypoints.size() - 1;
             }
         }
 
@@ -258,7 +272,7 @@ int main()
         }
 
         DrawCircleV(enemy.enemy_position, 20.0f, enemy.colour);
-        DrawCircleV(enemy2.enemy_position, 20.0f, enemy2.colour);
+        DrawCircleV(enemies[0].enemy_position, 20.0f, enemies[0].colour);
 
         EndDrawing();
     }
