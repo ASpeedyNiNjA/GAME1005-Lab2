@@ -193,7 +193,10 @@ int main()
         {
             if (spawn_timer >= 1.0f)
             {
-                enemy2.released = true;
+                Enemy enemy10;
+                enemies.push_back(enemy10);
+                enemy10.released = true;
+                spawn_timer = 0;
             }
         }
 
