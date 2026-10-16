@@ -200,6 +200,14 @@ int main()
             }
         }
 
+        for (int i = 0; i < 2; i++)
+        {
+            std::cout << "Number of enemies: " << enemies.size() << std::endl;
+            TraceLog(LOG_INFO, "Number of enemies: %d", (int)enemies.size());
+        }
+
+
+
         if (!enemy.at_end && enemy.released) //Keep missing this line of code scanning
         {
             Vector2 from = TileCenter(waypoints[enemy.curr].row, waypoints[enemy.curr].col);
