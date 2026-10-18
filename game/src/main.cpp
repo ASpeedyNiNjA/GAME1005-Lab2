@@ -120,10 +120,20 @@ std::vector<Cell> FloodFill(Cell start, int tiles[TILE_COUNT][TILE_COUNT], TileT
     return result;
 }
 
+struct Bullet
+{
+    Vector2 position;
+    Vector2 direction;
+    float speed;
+    float time;
+    bool enabled;
+};
+
 int main()
 {
 
-    Enemy enemy;
+    Bullet bullet{};
+    Enemy enemy; //Do I need to zero initialize these?
     enemy.released = true;
     Enemy enemy2;
     std::vector<Enemy> enemies;
@@ -178,6 +188,11 @@ int main()
             }
         }
     }
+
+
+    float bullet_time_current = 0.0f;
+    float bullet_time_total = 0.25f;
+    std::vector<Bullet> bullets;
 
     //Confirming 6 turrets and not just dots on a pixel map have been added to the vector array
     std::cout << "Number of turrets: " << turrets.size() << std::endl; 
@@ -265,6 +280,19 @@ int main()
                     enemies[i].at_end = enemies[i].curr == waypoints.size() - 1;
                 }
             }
+        }
+
+        bullet_time_current += dt;
+        if (bullet_time_current >= bullet_time_total && IsKeyDown(KEY_SPACE))
+        {
+            bullet_time_current = 0.0f;
+            
+            Bullet bullet{};
+            bullet.position = GetMousePosition();
+            bullet.direction = Vector2Normalize(ENETDOWN - bullet.position);
+            bullet.speed = 300.0f;
+            bullet.enabled = true;
+
         }
 
 
