@@ -43,8 +43,9 @@ struct Enemy
 struct Turret
 {
     Vector2 turret_location = { 0.0f, 0.0f };
-    int Damage = 1;
-    float fire_Interval = 0.8f;
+    int Damage = 1; //I messed up with a capital here
+    float fire_Interval = 0.8f; //And a capital here
+    float fire_timer = 0.0f;
 };
 
 constexpr std::array<Cell, 4> DIRECTIONS{ Cell{ -1, 0 }, Cell{ 1, 0 }, Cell{ 0, -1 }, Cell{ 0, 1 } };
@@ -302,17 +303,34 @@ int main()
             int closest_enemy = -1;
             //turrets[i]; Accessing all the turrets one by one
 
+       
+
             for (int b = 0; b < enemies.size(); b++)
             {
-                float distance = Vector2Distance(turrets[i].turret_location, enemies[b].enemy_position);
-                if (distance < closest_distance)
+                if (enemies[b].released)
                 {
-                    closest_distance = distance;
-                    closest_enemy = b;
+                    float distance = Vector2Distance(turrets[i].turret_location, enemies[b].enemy_position);
+                    if (distance < closest_distance)
+                    {
+                        closest_distance = distance;
+                        closest_enemy = b;
+                    }
                 }
-
             }
+            if (closest_enemy != -1)
+            {
+                turrets[i].fire_timer += dt;
+                if (turrets[i].fire_timer >= turrets[i].fire_Interval)
+               
+            }
+        }
 
+
+        if (spawn_timer >= 1.0f && next_enemy < enemies.size())
+        {
+            enemies[next_enemy].released = true;
+            next_enemy++;
+            spawn_timer = 0.0f;
         }
 
 
