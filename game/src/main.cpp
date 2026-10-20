@@ -321,16 +321,18 @@ int main()
             {
                 turrets[i].fire_timer += dt;
                 if (turrets[i].fire_timer >= turrets[i].fire_Interval)
+                {
+                    turrets[i].fire_timer = 0;
+                    //Fire
+                    Bullet bullet{};
+                    bullet.position = turrets[i].turret_location;
+                    bullet.direction = Vector2Normalize(enemy.enemy_position - bullet.position); //I think this only targets the first enemy launched
+                    bullet.speed = 300.0f;
+                    bullet.enabled = true;
+                    bullets.push_back(bullet);
+                }
                
             }
-        }
-
-
-        if (spawn_timer >= 1.0f && next_enemy < enemies.size())
-        {
-            enemies[next_enemy].released = true;
-            next_enemy++;
-            spawn_timer = 0.0f;
         }
 
 
@@ -357,7 +359,8 @@ int main()
 
         for (const Bullet& bullet : bullets)
         {
-            DrawCircleV(bullet.position, 20.0f, RED);
+            DrawCircleV(bullet.position, 20.0f, BLUE
+            );
         }
 
         //DrawCircleV(enemy.enemy_position, 20.0f, enemy.colour);
