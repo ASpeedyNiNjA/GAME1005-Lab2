@@ -326,7 +326,7 @@ int main()
                     //Fire
                     Bullet bullet{};
                     bullet.position = turrets[i].turret_location;
-                    bullet.direction = Vector2Normalize(enemy.enemy_position - bullet.position); //I think this only targets the first enemy launched
+                    bullet.direction = Vector2Normalize(enemies[closest_enemy].enemy_position - bullet.position); //I think this only targets the first enemy launched
                     bullet.speed = 300.0f;
                     bullet.enabled = true;
                     bullets.push_back(bullet);
