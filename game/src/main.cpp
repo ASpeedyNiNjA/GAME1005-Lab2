@@ -289,12 +289,41 @@ int main()
             
             Bullet bullet{};
             bullet.position = GetMousePosition();
-            bullet.direction = Vector2Normalize(ENETDOWN - bullet.position);
+            bullet.direction = Vector2Normalize(enemy.enemy_position - bullet.position); //I think this only targets the first enemy launched
             bullet.speed = 300.0f;
             bullet.enabled = true;
+            bullets.push_back(bullet);
+        }
+
+
+        for (int i = 0; i < turrets.size(); i++)
+        {
+            float closest_distance = 9999.0f;
+            int closest_enemy = -1;
+            //turrets[i]; Accessing all the turrets one by one
+
+            for (int b = 0; b < enemies.size(); b++)
+            {
+                float distance = Vector2Distance(turrets[i].turret_location, enemies[b].enemy_position);
+                if (distance < closest_distance)
+                {
+                    closest_distance = distance;
+                    closest_enemy = b;
+                }
+
+            }
 
         }
 
+
+        for (Bullet& bullet : bullets)
+        {
+            Vector2 bullet_velocity = bullet.direction * bullet.speed;
+            bullet.position += bullet.direction * bullet.speed * dt;
+            bullet.time += dt;
+        }
+
+        //Start Here
 
         BeginDrawing();
         ClearBackground(BLACK);
@@ -306,6 +335,11 @@ int main()
             {
                 DrawTile(row, col, tiles[row][col]);
             }
+        }
+
+        for (const Bullet& bullet : bullets)
+        {
+            DrawCircleV(bullet.position, 20.0f, RED);
         }
 
         //DrawCircleV(enemy.enemy_position, 20.0f, enemy.colour);
