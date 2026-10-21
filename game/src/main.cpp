@@ -348,15 +348,18 @@ int main()
 
             for (int b = 0; b < enemies.size(); b++)
             {
-                if (CheckCollisionCircles(bullet.position, 20.0f, enemies[b].enemy_position, 20.0f))
+                if (enemies[b].released && enemies[b].HP > 0 && !enemies[b].at_end)
                 {
-                    TraceLog(LOG_INFO, "Bullet hit Enemy %d", b);
-                    enemies[b].HP -= 1;
-                    bullet.enabled = false;
-                    if (enemies[b].HP <= 0)
+                    if (CheckCollisionCircles(bullet.position, 20.0f, enemies[b].enemy_position, 20.0f))
                     {
-                        TraceLog(LOG_INFO, "Enemy Defeated %d", b);
+                        enemies[b].HP -= 1;
+                        bullet.enabled = false;
+
+                        TraceLog(LOG_INFO, "Bullet hit Enemy %d. HP: %d", b, enemies[b].HP);
+                        break;
+
                     }
+
                 }
             }
         }
@@ -377,15 +380,20 @@ int main()
 
         for (const Bullet& bullet : bullets)
         {
-            DrawCircleV(bullet.position, 20.0f, BLUE
-            );
+            if (bullet.enabled)
+            {
+                DrawCircleV(bullet.position, 20.0f, BLUE);
+            }
         }
 
         //DrawCircleV(enemy.enemy_position, 20.0f, enemy.colour);
         //DrawCircleV(enemies[0].enemy_position, 20.0f, enemies[0].colour);
         for (int i = 0; i < 10; i++)
         {
-            DrawCircleV(enemies[i].enemy_position, 20.0f, enemies[i].colour);
+            if (enemies[i].HP > 0)
+            {
+                DrawCircleV(enemies[i].enemy_position, 20.0f, enemies[i].colour);
+            }
         }
 
         EndDrawing();
