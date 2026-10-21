@@ -333,11 +333,7 @@ int main()
                     //TraceLog(LOG_INFO, "Turret %d targeting Enemy %d", i, closest_enemy); //Turret Targeting which Enemy debug log
                     bullets.push_back(bullet);
 
-                    //Check collision with enemies
-                    if (CheckCollisionCircles(bullet.position, 20.0f, enemies[i].enemy_position, 20.0f))
-                    {
-                        TraceLog(LOG_INFO, "Bullet hit Enemy %d", i);
-                    }
+                    
                 }
                
             }
@@ -355,6 +351,12 @@ int main()
                 if (CheckCollisionCircles(bullet.position, 20.0f, enemies[b].enemy_position, 20.0f))
                 {
                     TraceLog(LOG_INFO, "Bullet hit Enemy %d", b);
+                    enemies[b].HP -= 1;
+                    bullet.enabled = false;
+                    if (enemies[b].HP <= 0)
+                    {
+                        TraceLog(LOG_INFO, "Enemy Defeated %d", b);
+                    }
                 }
             }
         }
