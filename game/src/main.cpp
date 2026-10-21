@@ -350,7 +350,13 @@ int main()
             bullet.position += bullet.direction * bullet.speed * dt;
             bullet.time += dt;
 
-
+            for (int b = 0; b < enemies.size(); b++)
+            {
+                if (CheckCollisionCircles(bullet.position, 20.0f, enemies[b].enemy_position, 20.0f))
+                {
+                    TraceLog(LOG_INFO, "Bullet hit Enemy %d", b);
+                }
+            }
         }
 
         //Start Here
