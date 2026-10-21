@@ -316,6 +316,7 @@ int main()
                         closest_enemy = b;
                     }
                 }
+
             }
             if (closest_enemy != -1)
             {
@@ -326,10 +327,17 @@ int main()
                     //Fire
                     Bullet bullet{};
                     bullet.position = turrets[i].turret_location;
-                    bullet.direction = Vector2Normalize(enemies[closest_enemy].enemy_position - bullet.position); //I think this only targets the first enemy launched
+                    bullet.direction = Vector2Normalize(enemies[closest_enemy].enemy_position - bullet.position); 
                     bullet.speed = 300.0f;
                     bullet.enabled = true;
+                    //TraceLog(LOG_INFO, "Turret %d targeting Enemy %d", i, closest_enemy); //Turret Targeting which Enemy debug log
                     bullets.push_back(bullet);
+
+                    //Check collision with enemies
+                    if (CheckCollisionCircles(bullet.position, 20.0f, enemies[i].enemy_position, 20.0f))
+                    {
+                        TraceLog(LOG_INFO, "Bullet hit Enemy %d", i);
+                    }
                 }
                
             }
@@ -341,6 +349,8 @@ int main()
             Vector2 bullet_velocity = bullet.direction * bullet.speed;
             bullet.position += bullet.direction * bullet.speed * dt;
             bullet.time += dt;
+
+
         }
 
         //Start Here
