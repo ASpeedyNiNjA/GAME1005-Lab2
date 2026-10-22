@@ -154,11 +154,11 @@ int main()
     int next_enemy = 0;
 
     InitAudioDevice();
-	Sound fireTurret = LoadSound("assets/sounds/fireTurret.wav");
-	Sound explodeTurret = LoadSound("assets/sounds/explodeTurret.wav");
-	Sound createTurret = LoadSound("assets/sounds/createTurret.wav");
-	Sound hitEnemy = LoadSound("assets/sounds/hitEnemy.wav");
-	Sound deathBell = LoadSound("assets/sounds/deathBell.wav");
+	Sound fireTurret = LoadSound("game/sounds/fireTurret.mp3");
+	Sound explodeTurret = LoadSound("game/sounds/explodeTurret.mp3");
+	Sound createTurret = LoadSound("game/sounds/createTurret.wav");
+	Sound hitEnemy = LoadSound("game/sounds/hitEnemy.mp3");
+	Sound deathBell = LoadSound("game/sounds/deathBell.wav");
 
 
     for (int i = 0; i < 10; i++)
@@ -249,6 +249,8 @@ int main()
     {
         float dt = GetFrameTime();
 
+        if (IsKeyPressed(KEY_SPACE)) PlaySound(deathBell);
+
         switch (gameState)
         {
         case GameState::PLACING_TURRETS:
@@ -284,6 +286,8 @@ int main()
         {
             if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
             {
+                TraceLog(LOG_INFO, "Working Directory: %s", GetWorkingDirectory());
+                PlaySound(createTurret); // Play sound effect for turret creation
                 Vector2 mouse = GetMousePosition();
 
                 int col = static_cast<int>(mouse.x / TILE_SIZE);
@@ -298,11 +302,13 @@ int main()
 
                         turrets.push_back(turret);
                         tiles[row][col] = TURRET;
+
                     }
                 }
             }
             if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
             {
+                PlaySound(explodeTurret); // Play sound effect for turret removal
                 Vector2 mouse = GetMousePosition();
 
                 int col = static_cast<int>(mouse.x / TILE_SIZE);
@@ -320,10 +326,13 @@ int main()
                                     turret.turret_location.y == TileCenter(row, col).y;
                             }), turrets.end());
                         tiles[row][col] = GRASS; // Change tile back to GRASS
+
                     }
 
                 }
             }
+
+        }
 
 
             if (gameState == GameState::PLAYING)
@@ -432,7 +441,7 @@ int main()
                             bullet.enabled = true;
                             //TraceLog(LOG_INFO, "Turret %d targeting Enemy %d", i, closest_enemy); //Turret Targeting which Enemy debug log
                             bullets.push_back(bullet);
-
+							PlaySound(fireTurret); // Play sound effect for turret firing
 
                         }
 
@@ -455,6 +464,7 @@ int main()
                                 enemies[b].HP -= 1;
                                 bullet.enabled = false;
 
+                                PlaySound(hitEnemy);
                                 TraceLog(LOG_INFO, "Bullet hit Enemy %d. HP: %d", b, enemies[b].HP);
                                 break;
 
@@ -507,7 +517,7 @@ int main()
 
             EndDrawing();
         }
-    }
+    
 
     UnloadSound(fireTurret);
     UnloadSound(explodeTurret);
