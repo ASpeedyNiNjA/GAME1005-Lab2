@@ -161,6 +161,8 @@ int main()
 	Sound deathBell = LoadSound("game/sounds/deathBell.wav");
 
 
+
+
     for (int i = 0; i < 10; i++)
     {
             Enemy enemy10;
@@ -244,6 +246,7 @@ int main()
     //bool at_end = false;
 
     InitWindow(SCREEN_SIZE, SCREEN_SIZE, "Tower Defense");
+    Texture2D turretTexture = LoadTexture("game/pixel/turret-smile.png");
     SetTargetFPS(60);
     while (!WindowShouldClose())
     {
@@ -493,6 +496,7 @@ int main()
                 for (int col = 0; col < TILE_COUNT; col++)
                 {
                     DrawTile(row, col, tiles[row][col]);
+
                 }
             }
 
@@ -510,7 +514,8 @@ int main()
             {
                 if (enemies[i].released && enemies[i].HP > 0 && !enemies[i].at_end)
                 {
-                    DrawCircleV(enemies[i].enemy_position, 20.0f, enemies[i].colour);
+                   // DrawCircleV(enemies[i].enemy_position, 20.0f, enemies[i].colour);
+                    DrawTexture(turretTexture, enemies[i].enemy_position.x, enemies[i].enemy_position.y, WHITE);
                 }
             }
 
