@@ -153,6 +153,13 @@ int main()
     float spawn_timer = 0.0f;
     int next_enemy = 0;
 
+    InitAudioDevice();
+	Sound fireTurret = LoadSound("assets/sounds/fireTurret.wav");
+	Sound explodeTurret = LoadSound("assets/sounds/explodeTurret.wav");
+	Sound createTurret = LoadSound("assets/sounds/createTurret.wav");
+	Sound hitEnemy = LoadSound("assets/sounds/hitEnemy.wav");
+	Sound deathBell = LoadSound("assets/sounds/deathBell.wav");
+
 
     for (int i = 0; i < 10; i++)
     {
@@ -501,6 +508,14 @@ int main()
             EndDrawing();
         }
     }
+
+    UnloadSound(fireTurret);
+    UnloadSound(explodeTurret);
+    UnloadSound(createTurret);
+    UnloadSound(hitEnemy);
+    UnloadSound(deathBell);
+
+	CloseAudioDevice();
     CloseWindow();
     return 0;
 }
