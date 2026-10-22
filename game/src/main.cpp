@@ -22,6 +22,15 @@ enum TileType : int
     COUNT
 };
 
+enum GameState : int
+{
+    PLACING_TURRETS,
+    PLAYING,
+    LEVEL_WON,
+    LEVEL_LOST,
+    GAME_WON
+};
+
 struct Cell
 {
     int row;
@@ -133,6 +142,8 @@ struct Bullet
 int main()
 {
 
+    GameState gameState = GameState::PLACING_TURRETS;
+    int currentLevel = 1;
     Bullet bullet{};
     Enemy enemy; //Do I need to zero initialize these?
     enemy.released = true;
@@ -141,6 +152,7 @@ int main()
     std::vector<Turret> turrets;
     float spawn_timer = 0.0f;
     int next_enemy = 0;
+
 
     for (int i = 0; i < 10; i++)
     {
@@ -229,141 +241,175 @@ int main()
     while (!WindowShouldClose())
     {
         float dt = GetFrameTime();
-        spawn_timer += dt;
 
-        //if (spawn_timer >= 1.0f)
-        //{
-        //    enemies[0].released = true;
-        //}
-
-        if (spawn_timer >= 1.0f && next_enemy < enemies.size())
+        switch (gameState)
         {
-            enemies[next_enemy].released = true;
-            next_enemy++;
-            spawn_timer = 0.0f;
-        }
-
-
-        if (!enemy.at_end && enemy.released) //Keep missing this line of code scanning
+        case GameState::PLACING_TURRETS:
         {
-            Vector2 from = TileCenter(waypoints[enemy.curr].row, waypoints[enemy.curr].col);
-            Vector2 to = TileCenter(waypoints[enemy.next].row, waypoints[enemy.next].col);
-            Vector2 direction = Vector2Normalize(to - from);
-            enemy.enemy_position += direction * enemy.enemy_speed * dt;
-        
-            // Tolorance depends on enemy speed
-            if (CheckCollisionPointCircle(enemy.enemy_position, to, min_distance))
+            if (IsKeyPressed(KEY_P))
             {
-                enemy.enemy_position = to;
-        
-                enemy.curr++;
-                enemy.next++;
-                enemy.at_end = enemy.curr == waypoints.size() - 1;
+                gameState = GameState::PLAYING;
             }
+            break;
         }
 
-        for (int i = 0; i < 10; i++)
+        case GameState::PLAYING:
         {
-            if (!enemies[i].at_end && enemies[i].released)
+            if (IsKeyPressed(KEY_R))
             {
-                Vector2 from = TileCenter(waypoints[enemies[i].curr].row, waypoints[enemies[i].curr].col);
-                Vector2 to = TileCenter(waypoints[enemies[i].next].row, waypoints[enemies[i].next].col);
+                gameState = GameState::PLACING_TURRETS;
+            }
+            break;
+        }
+
+        case GameState::LEVEL_WON:
+            break;
+
+        case GameState::LEVEL_LOST:
+            break;
+
+        case GameState::GAME_WON:
+            break;
+        }
+
+        if (gameState == GameState::PLAYING)
+        {
+
+            spawn_timer += dt;
+
+            //if (spawn_timer >= 1.0f)
+            //{
+            //    enemies[0].released = true;
+            //}
+
+            if (spawn_timer >= 1.0f && next_enemy < enemies.size())
+            {
+                enemies[next_enemy].released = true;
+                next_enemy++;
+                spawn_timer = 0.0f;
+            }
+
+
+            if (!enemy.at_end && enemy.released) //Keep missing this line of code scanning
+            {
+                Vector2 from = TileCenter(waypoints[enemy.curr].row, waypoints[enemy.curr].col);
+                Vector2 to = TileCenter(waypoints[enemy.next].row, waypoints[enemy.next].col);
                 Vector2 direction = Vector2Normalize(to - from);
-                enemies[i].enemy_position += direction * enemies[i].enemy_speed * dt;
+                enemy.enemy_position += direction * enemy.enemy_speed * dt;
 
                 // Tolorance depends on enemy speed
-                if (CheckCollisionPointCircle(enemies[i].enemy_position, to, min_distance))
+                if (CheckCollisionPointCircle(enemy.enemy_position, to, min_distance))
                 {
-                    enemies[i].enemy_position = to;
+                    enemy.enemy_position = to;
 
-                    enemies[i].curr++;
-                    enemies[i].next++;
-                    enemies[i].at_end = enemies[i].curr == waypoints.size() - 1;
+                    enemy.curr++;
+                    enemy.next++;
+                    enemy.at_end = enemy.curr == waypoints.size() - 1;
                 }
             }
-        }
 
-        bullet_time_current += dt;
-        if (bullet_time_current >= bullet_time_total && IsKeyDown(KEY_SPACE))
-        {
-            bullet_time_current = 0.0f;
-            
-            Bullet bullet{};
-            bullet.position = GetMousePosition();
-            bullet.direction = Vector2Normalize(enemy.enemy_position - bullet.position); //I think this only targets the first enemy launched
-            bullet.speed = 300.0f;
-            bullet.enabled = true;
-            bullets.push_back(bullet);
-        }
-
-
-        for (int i = 0; i < turrets.size(); i++)
-        {
-            float closest_distance = 9999.0f;
-            int closest_enemy = -1;
-            //turrets[i]; Accessing all the turrets one by one
-
-       
-
-            for (int b = 0; b < enemies.size(); b++)
+            for (int i = 0; i < 10; i++)
             {
-                if (enemies[b].released)
+                if (!enemies[i].at_end && enemies[i].released)
                 {
-                    float distance = Vector2Distance(turrets[i].turret_location, enemies[b].enemy_position);
-                    if (distance < closest_distance)
+                    Vector2 from = TileCenter(waypoints[enemies[i].curr].row, waypoints[enemies[i].curr].col);
+                    Vector2 to = TileCenter(waypoints[enemies[i].next].row, waypoints[enemies[i].next].col);
+                    Vector2 direction = Vector2Normalize(to - from);
+                    enemies[i].enemy_position += direction * enemies[i].enemy_speed * dt;
+
+                    // Tolorance depends on enemy speed
+                    if (CheckCollisionPointCircle(enemies[i].enemy_position, to, min_distance))
                     {
-                        closest_distance = distance;
-                        closest_enemy = b;
+                        enemies[i].enemy_position = to;
+
+                        enemies[i].curr++;
+                        enemies[i].next++;
+                        enemies[i].at_end = enemies[i].curr == waypoints.size() - 1;
                     }
                 }
-
             }
-            if (closest_enemy != -1)
-            {
-                turrets[i].fire_timer += dt;
-                if (turrets[i].fire_timer >= turrets[i].fire_Interval)
-                {
-                    turrets[i].fire_timer = 0;
-                    //Fire
-                    Bullet bullet{};
-                    bullet.position = turrets[i].turret_location;
-                    bullet.direction = Vector2Normalize(enemies[closest_enemy].enemy_position - bullet.position); 
-                    bullet.speed = 300.0f;
-                    bullet.enabled = true;
-                    //TraceLog(LOG_INFO, "Turret %d targeting Enemy %d", i, closest_enemy); //Turret Targeting which Enemy debug log
-                    bullets.push_back(bullet);
 
-                    
-                }
-               
+            bullet_time_current += dt;
+            if (bullet_time_current >= bullet_time_total && IsKeyDown(KEY_SPACE))
+            {
+                bullet_time_current = 0.0f;
+
+                Bullet bullet{};
+                bullet.position = GetMousePosition();
+                bullet.direction = Vector2Normalize(enemy.enemy_position - bullet.position); //I think this only targets the first enemy launched
+                bullet.speed = 300.0f;
+                bullet.enabled = true;
+                bullets.push_back(bullet);
             }
-        }
 
 
-        for (Bullet& bullet : bullets)
-        {
-            Vector2 bullet_velocity = bullet.direction * bullet.speed;
-            bullet.position += bullet.direction * bullet.speed * dt;
-            bullet.time += dt;
-
-            for (int b = 0; b < enemies.size(); b++)
+            for (int i = 0; i < turrets.size(); i++)
             {
-                if (enemies[b].released && enemies[b].HP > 0 && !enemies[b].at_end)
+                float closest_distance = 9999.0f;
+                int closest_enemy = -1;
+                //turrets[i]; Accessing all the turrets one by one
+
+
+
+                for (int b = 0; b < enemies.size(); b++)
                 {
-                    if (CheckCollisionCircles(bullet.position, 20.0f, enemies[b].enemy_position, 20.0f))
+                    if (enemies[b].released)
                     {
-                        enemies[b].HP -= 1;
-                        bullet.enabled = false;
+                        float distance = Vector2Distance(turrets[i].turret_location, enemies[b].enemy_position);
+                        if (distance < closest_distance)
+                        {
+                            closest_distance = distance;
+                            closest_enemy = b;
+                        }
+                    }
 
-                        TraceLog(LOG_INFO, "Bullet hit Enemy %d. HP: %d", b, enemies[b].HP);
-                        break;
+                }
+                if (closest_enemy != -1)
+                {
+                    turrets[i].fire_timer += dt;
+                    if (turrets[i].fire_timer >= turrets[i].fire_Interval)
+                    {
+                        turrets[i].fire_timer = 0;
+                        //Fire
+                        Bullet bullet{};
+                        bullet.position = turrets[i].turret_location;
+                        bullet.direction = Vector2Normalize(enemies[closest_enemy].enemy_position - bullet.position);
+                        bullet.speed = 300.0f;
+                        bullet.enabled = true;
+                        //TraceLog(LOG_INFO, "Turret %d targeting Enemy %d", i, closest_enemy); //Turret Targeting which Enemy debug log
+                        bullets.push_back(bullet);
+
 
                     }
 
                 }
             }
-        }
 
+
+            for (Bullet& bullet : bullets)
+            {
+                Vector2 bullet_velocity = bullet.direction * bullet.speed;
+                bullet.position += bullet.direction * bullet.speed * dt;
+                bullet.time += dt;
+
+                for (int b = 0; b < enemies.size(); b++)
+                {
+                    if (enemies[b].released && enemies[b].HP > 0 && !enemies[b].at_end)
+                    {
+                        if (CheckCollisionCircles(bullet.position, 20.0f, enemies[b].enemy_position, 20.0f))
+                        {
+                            enemies[b].HP -= 1;
+                            bullet.enabled = false;
+
+                            TraceLog(LOG_INFO, "Bullet hit Enemy %d. HP: %d", b, enemies[b].HP);
+                            break;
+
+                        }
+
+                    }
+                }
+            }
+		} //End of PLAYING state
         //Start Here
 
         BeginDrawing();
@@ -390,10 +436,19 @@ int main()
         //DrawCircleV(enemies[0].enemy_position, 20.0f, enemies[0].colour);
         for (int i = 0; i < 10; i++)
         {
-            if (enemies[i].HP > 0)
+            if (enemies[i].released && enemies[i].HP > 0 && !enemies[i].at_end)
             {
                 DrawCircleV(enemies[i].enemy_position, 20.0f, enemies[i].colour);
             }
+        }
+
+        if (gameState == GameState::PLACING_TURRETS)
+        {
+            DrawText("PLACING TURRETS - Press P", 10, 10, 20, WHITE);
+        }
+        else if (gameState == GameState::PLAYING)
+        {
+            DrawText("PLAYING - Press R", 10, 10, 20, WHITE);
         }
 
         EndDrawing();
