@@ -39,7 +39,7 @@ struct Cell
 
 struct Enemy
 {
-    int HP = 2;
+    int HP = 4;
     Color colour = RED;
     Vector2 enemy_position = { 0.0f, 0.0f };
     float enemy_speed = 250.0f;
@@ -451,6 +451,7 @@ int main()
 
                 for (Bullet& bullet : bullets)
                 {
+					if (!bullet.enabled) continue;
                     Vector2 bullet_velocity = bullet.direction * bullet.speed;
                     bullet.position += bullet.direction * bullet.speed * dt;
                     bullet.time += dt;
@@ -464,12 +465,19 @@ int main()
                                 enemies[b].HP -= 1;
                                 bullet.enabled = false;
 
-                                PlaySound(hitEnemy);
-                                TraceLog(LOG_INFO, "Bullet hit Enemy %d. HP: %d", b, enemies[b].HP);
+								if (enemies[b].HP <= 0)
+								{
+									PlaySound(deathBell); // Play sound effect for enemy defeat
+									TraceLog(LOG_INFO, "Enemy %d has been defeated!", b);
+								}
+                                else
+                                {
+
+                                    PlaySound(hitEnemy);
+                                    TraceLog(LOG_INFO, "Bullet hit Enemy %d. HP: %d", b, enemies[b].HP);
+                                }
                                 break;
-
                             }
-
                         }
                     }
                 }
